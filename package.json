@@ -1,0 +1,16 @@
+{
+  "name": "kit-ai-toolkit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cross-agent Kit skills toolkit distributed as shared skill source plus thin client manifests.",
+  "license": "UNLICENSED",
+  "files": [
+    ".claude-plugin",
+    ".cursor-plugin",
+    ".codex-plugin",
+    "assets",
+    "skills",
+    "reference",
+    "README.md"
+  ]
+}
