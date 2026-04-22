@@ -5,7 +5,15 @@ import { loadSkills, ensureDir, copyDirectory, resolveHomePath } from './shared.
 
 const args = process.argv.slice(2);
 const options = parseArgs(args);
-const skills = loadSkills();
+const allSkills = loadSkills();
+const invalid = allSkills.filter((s) => !s.parsed || !s.parsed.attributes);
+if (invalid.length > 0) {
+  console.error(`Install failed: ${invalid.length} skill(s) have missing or invalid frontmatter:`);
+  for (const s of invalid) console.error(`  - ${s.slug}`);
+  console.error('Run `npm run validate` for details.');
+  process.exit(1);
+}
+const skills = allSkills;
 
 if (!options.target) {
   fail('Missing --target. Supported targets: codex-global, codex-project, compat-local, compat-dir.');
