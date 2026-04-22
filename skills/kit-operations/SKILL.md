@@ -27,7 +27,7 @@ Output shape:
       "currency": "USD",
       "transaction_time": "2026-03-15T14:30:00Z",
       "subtotal": 49.00,
-      "products": [{ "pid": 1, "lid": 0, "quantity": 1, "unit_price": 49.00 }]
+      "products": [{ "pid": "prod_abc123", "lid": "li_0", "quantity": 1, "unit_price": 49.00 }]
     }
   ]
 }
