@@ -2,7 +2,13 @@ import path from 'node:path';
 import { assetsDir, distDir, loadSkills, resetDir, copyDirectory, copyFile, writeJson } from './shared.mjs';
 
 const packageJson = JSON.parse(await BunOrNodeRead(path.join(path.resolve(import.meta.dirname, '..'), 'package.json')));
-const skills = loadSkills();
+const skills = loadSkills().filter((skill) => {
+  if (!skill.parsed || !skill.parsed.attributes) {
+    console.warn(`Skipping ${skill.slug}: missing or invalid frontmatter`);
+    return false;
+  }
+  return true;
+});
 
 resetDir(distDir);
 
