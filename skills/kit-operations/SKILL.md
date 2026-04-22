@@ -10,8 +10,8 @@ Cross-domain operational work: purchases, webhooks, and bulk jobs. Requires kit-
 ## Purchases
 
 ```bash
-"${KIT_BIN[@]}" purchases list --json
-"${KIT_BIN[@]}" purchases get <id> --json
+kit purchases list --json
+kit purchases get <id> --json
 ```
 
 Output shape:
@@ -38,9 +38,9 @@ Output shape:
 ## Webhooks
 
 ```bash
-"${KIT_BIN[@]}" webhooks list --json
-"${KIT_BIN[@]}" webhooks create --target-url "https://example.com/hook" --event "subscriber.subscriber_activate" --json
-"${KIT_BIN[@]}" webhooks delete <id>
+kit webhooks list --json
+kit webhooks create --target-url "https://example.com/hook" --event "subscriber.subscriber_activate" --json
+kit webhooks delete <id>
 ```
 
 Webhook events include:
@@ -52,9 +52,11 @@ Webhook events include:
 
 ## Bulk Operations
 
+> ⚠️ Bulk endpoints require OAuth authentication. API keys will return 401.
+
 ```bash
-"${KIT_BIN[@]}" bulk subscribers create --file ./subscribers.json
-"${KIT_BIN[@]}" bulk tags add --file ./taggings.json
+kit bulk subscribers create --file ./subscribers.json
+kit bulk tags add --file ./taggings.json
 ```
 
 Subscriber import file format (JSON array):
@@ -78,7 +80,7 @@ Tagging file format:
 Bulk operations are async — the CLI returns a job ID. Check status with:
 
 ```bash
-"${KIT_BIN[@]}" bulk status <job_id> --json
+kit bulk status <job_id> --json
 ```
 
 ## Known Limitations

@@ -9,23 +9,17 @@ Account context and auth for all Kit CLI operations. Other Kit skills depend on 
 
 ## CLI Bootstrap
 
-All Kit skills use this pattern. Establish it once per session.
+All Kit skills assume the `kit` CLI is installed.
 
-```bash
-if command -v kit >/dev/null 2>&1; then
-  KIT_BIN=(kit)
-else
-  KIT_BIN=(npx @kit/cli)
-fi
-```
+If not installed globally, use `npx @kit/cli` as a drop-in replacement.
 
 ## Verify Auth
 
 Before any Kit operation, confirm auth and account context:
 
 ```bash
-"${KIT_BIN[@]}" config show
-"${KIT_BIN[@]}" account
+kit config show
+kit account
 ```
 
 `account` returns:
@@ -45,14 +39,14 @@ If auth is missing or `state` is not `active`, stop before any mutations.
 ## Login / Logout
 
 ```bash
-"${KIT_BIN[@]}" login
-"${KIT_BIN[@]}" logout
+kit login
+kit logout
 ```
 
 `login` opens an OAuth flow. The CLI stores the token locally — subsequent commands use it automatically.
 
 ## Known Quirks
 
-- API keys and OAuth tokens both work. OAuth is preferred for multi-tenant/App Store use.
+- API keys and OAuth tokens both work. OAuth is preferred for multi-tenant/App Store use, and is *required* for bulk operations.
 - Token refresh is automatic in the CLI. If you get repeated 401s, `logout` then `login` again.
 - `config show` reveals which auth method is active (API key vs OAuth).

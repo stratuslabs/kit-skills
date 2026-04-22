@@ -10,9 +10,9 @@ Broadcast management, email templates, and send operations via the Kit CLI. Requ
 ## Broadcasts
 
 ```bash
-"${KIT_BIN[@]}" broadcasts list --json
-"${KIT_BIN[@]}" broadcasts get <id> --json
-"${KIT_BIN[@]}" broadcasts stats <id> --json
+kit broadcasts list --json
+kit broadcasts get <id> --json
+kit broadcasts stats <id> --json
 ```
 
 List output shape:
@@ -47,10 +47,10 @@ Stats output includes: `recipients`, `open_rate`, `click_rate`, `emails_opened`,
 ## Creating & Scheduling
 
 ```bash
-"${KIT_BIN[@]}" broadcasts create --subject "Subject" --content "<p class=\"\">Body</p>" --json
-"${KIT_BIN[@]}" broadcasts create --subject "Subject" --content "<p class=\"\">Body</p>" --send-at "2026-05-01T09:00:00-04:00" --json
-"${KIT_BIN[@]}" broadcasts update <id> --subject "New subject" --json
-"${KIT_BIN[@]}" broadcasts delete <id>
+kit broadcasts create --subject "Subject" --content "<p class=\"\">Body</p>" --json
+kit broadcasts create --subject "Subject" --content "<p class=\"\">Body</p>" --send-at "2026-05-01T09:00:00-04:00" --json
+kit broadcasts update <id> --subject "New subject" --json
+kit broadcasts delete <id>
 ```
 
 - Omit `--send-at` to save as draft.
@@ -60,7 +60,7 @@ Stats output includes: `recipients`, `open_rate`, `click_rate`, `emails_opened`,
 ## Email Templates
 
 ```bash
-"${KIT_BIN[@]}" email-templates list --json
+kit email-templates list --json
 ```
 
 Output:
@@ -95,7 +95,7 @@ Target specific subscribers with `--subscriber-filter`. Read `references/subscri
 Quick example — send only to tag ID 42:
 
 ```bash
-"${KIT_BIN[@]}" broadcasts create --subject "VIP Update" --content "..." \
+kit broadcasts create --subject "VIP Update" --content "..." \
   --subscriber-filter '[{"all":[{"type":"tag","ids":[42]}],"any":null,"none":null}]'
 ```
 
@@ -104,7 +104,7 @@ Supports `all` (AND), `any` (OR), `none` (NOT) with `type: "tag"` or `type: "seg
 ## Sequences
 
 ```bash
-"${KIT_BIN[@]}" sequences list --json
+kit sequences list --json
 ```
 
 Check sequences when a send might belong to an automation flow rather than a one-off broadcast.

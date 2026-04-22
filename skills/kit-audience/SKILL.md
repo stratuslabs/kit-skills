@@ -10,8 +10,8 @@ Subscriber and audience management via the Kit CLI. Requires kit-account for aut
 ## Subscribers
 
 ```bash
-"${KIT_BIN[@]}" subscribers list --json
-"${KIT_BIN[@]}" subscribers get <id> --json
+kit subscribers list --json
+kit subscribers get <id> --json
 ```
 
 List output shape:
@@ -37,9 +37,9 @@ Subscriber states: `active`, `inactive`, `cancelled`, `bounced`, `complained`.
 ## Tags
 
 ```bash
-"${KIT_BIN[@]}" tags list --json
-"${KIT_BIN[@]}" tags add <subscriber_id> <tag_id>
-"${KIT_BIN[@]}" tags remove <subscriber_id> <tag_id>
+kit tags list --json
+kit tags add <subscriber_id> <tag_id>
+kit tags remove <subscriber_id> <tag_id>
 ```
 
 Tags output:
@@ -57,7 +57,7 @@ Always resolve tag names to IDs before write operations — names are not unique
 ## Forms & Landing Pages
 
 ```bash
-"${KIT_BIN[@]}" forms list --json
+kit forms list --json
 ```
 
 Returns forms and landing pages together. Distinguish by `type` field (`embed`, `hosted`, `modal`).
@@ -65,7 +65,7 @@ Returns forms and landing pages together. Distinguish by `type` field (`embed`, 
 ## Custom Fields
 
 ```bash
-"${KIT_BIN[@]}" custom-fields list --json
+kit custom-fields list --json
 ```
 
 Custom field values are per-subscriber in the `fields` object. Field keys are lowercase with underscores.
@@ -73,7 +73,7 @@ Custom field values are per-subscriber in the `fields` object. Field keys are lo
 ## Segments
 
 ```bash
-"${KIT_BIN[@]}" segments list --json
+kit segments list --json
 ```
 
 Returns segment `id` and `name`. Use segment IDs for broadcast targeting (see kit-broadcasts).
@@ -82,5 +82,5 @@ Returns segment `id` and `name`. Use segment IDs for broadcast targeting (see ki
 
 - *No endpoint to list subscribers within a segment.* You can list segments but cannot enumerate their members via the CLI.
 - Pagination uses cursor-based `start_cursor`/`end_cursor`, not page numbers.
-- Bulk subscriber operations use `kit bulk subscribers create --file ./subscribers.json` (see kit-operations).
+- Bulk subscriber operations use `kit bulk subscribers create --file ./subscribers.json` (see kit-operations). Bulk ops require OAuth auth.
 - Subscriber search is by email address only — no full-text name search.
