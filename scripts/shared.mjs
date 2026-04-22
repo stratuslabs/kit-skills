@@ -22,13 +22,13 @@ export function getSkillDirectories() {
 }
 
 export function parseFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n?/);
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
   if (!match) {
     return null;
   }
 
   const frontmatter = {};
-  for (const line of match[1].split('\n')) {
+  for (const line of match[1].split(/\r?\n/)) {
     const field = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
     if (field) {
       frontmatter[field[1]] = field[2].trim();
@@ -43,6 +43,9 @@ export function parseFrontmatter(content) {
 
 export function loadSkills() {
   return getSkillDirectories().map((entry) => {
+    if (!fs.existsSync(entry.skillFile)) {
+      return { ...entry, content: null, parsed: null };
+    }
     const content = fs.readFileSync(entry.skillFile, 'utf8');
     const parsed = parseFrontmatter(content);
 
