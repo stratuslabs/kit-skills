@@ -9,7 +9,8 @@ The Kit AI Toolkit connects your coding agent to Kit's email marketing features 
 ### Claude Code
 
 ```bash
-/plugin install stratuslabs/kit-skills
+/plugin marketplace add stratuslabs/kit-skills
+/plugin install kit-skills@stratuslabs
 ```
 
 ### Codex

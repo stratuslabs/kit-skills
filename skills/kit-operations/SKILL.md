@@ -46,9 +46,9 @@ kit webhooks delete <id>
 Webhook events include:
 - `subscriber.subscriber_activate` — new confirmed subscriber
 - `subscriber.subscriber_unsubscribe` — unsubscribe
-- `subscriber.form_subscribe` — form submission
+- `subscriber.form_subscribe` — form submission (requires `--form-id <id>`)
 - `purchase.purchase_create` — new purchase
-- `subscriber.tag_add` / `subscriber.tag_remove` — tag changes
+- `subscriber.tag_add` / `subscriber.tag_remove` — tag changes (requires `--tag-id <id>`)
 
 ## Bulk Operations
 
