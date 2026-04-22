@@ -1,46 +1,87 @@
 ---
 name: kit-operations
-description: Use for cross-domain Kit workflows and operational tasks that span purchases, webhooks, bulk jobs, and related inspection work. Prefer supported commands like `kit purchases ...`, `kit webhooks ...`, and `kit bulk ...`.
+description: Use for Kit operational tasks spanning purchases, webhooks, and bulk jobs. Handles bulk subscriber imports, bulk tagging, webhook management, and purchase data inspection. Requires kit-account for CLI bootstrap and auth.
 ---
 
 # Kit Operations
 
-Use this skill for cross-domain operational work that does not fit cleanly into account, audience, or broadcasts.
+Cross-domain operational work: purchases, webhooks, and bulk jobs. Requires kit-account for auth setup.
 
-## Command pattern
-
-```bash
-if command -v kit >/dev/null 2>&1; then
-  KIT_BIN=(kit)
-else
-  KIT_BIN=(npx @kit/cli)
-fi
-"${KIT_BIN[@]}" config show
-"${KIT_BIN[@]}" account
-```
-
-Then prefer structured inspection commands when available:
+## Purchases
 
 ```bash
-"${KIT_BIN[@]}" purchases list --json
-"${KIT_BIN[@]}" webhooks list --json
+kit purchases list --json
+kit purchases get <id> --json
 ```
 
-Use bulk commands only for explicit batch workflows, for example:
+Output shape:
+
+```json
+{
+  "purchases": [
+    {
+      "id": 555,
+      "transaction_id": "ch_abc123",
+      "status": "paid",
+      "email_address": "buyer@example.com",
+      "currency": "USD",
+      "transaction_time": "2026-03-15T14:30:00Z",
+      "subtotal": 49.00,
+      "products": [{ "pid": 1, "lid": 0, "quantity": 1, "unit_price": 49.00 }]
+    }
+  ]
+}
+```
+
+`subtotal` and `unit_price` are decimal currency amounts (e.g. `49.00`), not cents. `status` values: `paid`, `refunded`.
+
+## Webhooks
 
 ```bash
-"${KIT_BIN[@]}" bulk subscribers create --file ./subscribers.json
-"${KIT_BIN[@]}" bulk tags add --file ./taggings.json
+kit webhooks list --json
+kit webhooks create --target-url "https://example.com/hook" --event "subscriber.subscriber_activate" --json
+kit webhooks delete <id>
 ```
 
-## Guidance
+Webhook events include:
+- `subscriber.subscriber_activate` — new confirmed subscriber
+- `subscriber.subscriber_unsubscribe` — unsubscribe
+- `subscriber.form_subscribe` — form submission (requires `--form-id <id>`)
+- `purchase.purchase_create` — new purchase
+- `subscriber.tag_add` / `subscriber.tag_remove` — tag changes (requires `--tag-id <id>`)
 
-- Use JSON whenever another step depends on IDs, statuses, timestamps, or batch results.
-- Gather the minimum structured context once, then execute the next operation with explicit identifiers.
-- Keep shell usage portable.
+## Bulk Operations
 
-## Safety
+> ⚠️ Bulk endpoints require OAuth authentication. API keys will return 401.
 
-- Verify config and account context before operational mutations.
-- Prefer read-only inspection first when diagnosing a workflow.
-- If a task spans multiple domains, report the plan briefly before any write step.
+```bash
+kit bulk subscribers create --file ./subscribers.json
+kit bulk tags add --file ./taggings.json
+```
+
+Subscriber import file format (JSON array):
+
+```json
+[
+  { "email_address": "new@example.com", "first_name": "Alex" },
+  { "email_address": "another@example.com", "first_name": "Jordan", "fields": { "company": "Acme" } }
+]
+```
+
+Tagging file format:
+
+```json
+[
+  { "subscriber_id": 12345, "tag_id": 42 },
+  { "subscriber_id": 12346, "tag_id": 42 }
+]
+```
+
+Small bulk requests are handled synchronously — the response includes results (and per-row errors) immediately. Larger batches are processed async; provide a `callback_url` to receive completion notification. There is no polling endpoint for async jobs.
+
+## Known Limitations
+
+- No bulk unsubscribe via CLI — must process individually.
+- Purchase data is read-only (no creating purchases via CLI).
+- Webhook delivery failures are not visible through the CLI — check Kit's dashboard.
+- Bulk jobs have rate limits. For large imports (>10k), split into batches.

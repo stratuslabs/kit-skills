@@ -2,22 +2,16 @@
   "name": "kit-ai-toolkit",
   "version": "1.0.0",
   "private": true,
-  "description": "Installable Kit skill bundle with Codex-ready installs and generated compatibility exports for other clients.",
+  "description": "AI toolkit for Kit — agent skills for managing broadcasts, subscribers, tags, and automations.",
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
-    "clean": "node ./scripts/clean.mjs",
     "validate": "node ./scripts/validate-skills.mjs",
-    "build": "node ./scripts/build-compat.mjs",
     "install:codex": "node ./scripts/install-skills.mjs --target codex-global",
     "install:codex:project": "node ./scripts/install-skills.mjs --target codex-project",
-    "install:compat": "node ./scripts/install-skills.mjs --target compat-local",
-    "prepare": "npm run build"
+    "install:compat": "node ./scripts/install-skills.mjs --target compat-local"
   },
   "files": [
-    "assets",
-    "dist",
-    "reference",
     "scripts",
     "skills",
     "README.md"

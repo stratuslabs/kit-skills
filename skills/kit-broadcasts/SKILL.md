@@ -1,165 +1,117 @@
 ---
 name: kit-broadcasts
-description: Use for Kit broadcast execution and content workflows, including broadcast lookup, draft review, sequence checks, email template resolution, scheduling context, and send-risk validation with supported `kit broadcasts`, `kit sequences`, and `kit email-templates` commands.
+description: Use for Kit broadcast and email workflows — creating drafts, scheduling sends, checking stats, managing templates, and targeting subscribers. Handles Kit's HTML content format and subscriber filtering. Requires kit-account for CLI bootstrap and auth.
 ---
 
 # Kit Broadcasts
 
-Use this skill for high-stakes Kit messaging work: broadcasts, sequences, templates, send readiness, and status checks.
+Broadcast management, email templates, and send operations via the Kit CLI. Requires kit-account for auth setup.
 
-This is the most operator-sensitive Kit skill in the bundle. Treat it like production operations, not casual content browsing.
-
-## Primary goals
-
-1. Find the right broadcast, sequence, or template reliably.
-2. Use structured output to resolve names to IDs before follow-up actions.
-3. Separate content inspection from send-impacting actions.
-4. Reduce the chance of sending, scheduling, or editing the wrong object.
-
-## Bootstrap pattern
-
-Always establish CLI availability and account context first.
+## Broadcasts
 
 ```bash
-if command -v kit >/dev/null 2>&1; then
-  KIT_BIN=(kit)
-else
-  KIT_BIN=(npx @kit/cli)
-fi
-"${KIT_BIN[@]}" config show
-"${KIT_BIN[@]}" account
+kit broadcasts list --json
+kit broadcasts get <id> --json
+kit broadcasts stats <id> --json
 ```
 
-If auth or account context is missing, stop before any mutation or scheduling work.
+List output shape:
 
-## Preferred inspection commands
+```json
+{
+  "broadcasts": [
+    {
+      "id": 9876,
+      "subject": "Weekly Update #12",
+      "description": "Internal note",
+      "content": "<p class=\"\">HTML content</p>",
+      "public": false,
+      "send_at": "2026-05-01T09:00:00-04:00",
+      "published_at": null,
+      "thumbnail_url": null,
+      "email_template": { "id": 9, "name": "Clean Layout" },
+      "subscriber_filter": []
+    }
+  ],
+  "pagination": { "has_previous_page": false, "has_next_page": false, "start_cursor": "...", "end_cursor": "..." }
+}
+```
 
-For anything more than a quick glance, use JSON.
+Determine broadcast status from `send_at`:
+- `send_at` null → *draft* (even if `published_at` is set from `public: true`)
+- `send_at` set + future → *scheduled*
+- `send_at` past → *sent*
+
+Stats output includes: `recipients`, `open_rate`, `click_rate`, `emails_opened`, `total_clicks`, `unsubscribes`, `unsubscribe_rate`, `status`, `progress`.
+
+## Creating & Scheduling
 
 ```bash
-"${KIT_BIN[@]}" broadcasts list --json
-"${KIT_BIN[@]}" sequences list --json
-"${KIT_BIN[@]}" email-templates list --json
+kit broadcasts create --subject "Subject" --content "<p class=\"\">Body</p>" --json
+kit broadcasts create --subject "Subject" --content "<p class=\"\">Body</p>" --send-at "2026-05-01T09:00:00-04:00" --json
+kit broadcasts update <id> --subject "New subject" --json
+kit broadcasts delete <id>
 ```
 
-Use text output only for a brief human-facing summary after the operational work is done.
+- Omit `--send-at` to save as draft.
+- `--send-at` takes ISO 8601 with timezone offset. Always confirm timezone.
+- Sent broadcasts cannot be edited or rescheduled.
 
-## When to use this skill
-
-Use this skill when the task involves any of the following:
-
-- locating a broadcast by title, state, or send window
-- checking draft versus scheduled versus sent status
-- matching a sequence or template to a broadcast workflow
-- comparing candidate sends before making a recommendation
-- verifying IDs and metadata before a high-impact action
-- summarizing send state for an operator
-
-## Working style
-
-### 1. Resolve names to IDs first
-
-Never rely on a title match alone if JSON output gives you a stable ID.
-
-Preferred pattern:
-
-1. list the candidate objects in JSON,
-2. narrow by title, timestamps, or status,
-3. confirm the intended object,
-4. use the ID for any next step.
-
-### 2. Read first, mutate second
-
-Before any send-adjacent step, inspect the current state in structured output.
-
-Good examples:
-
-- check whether the broadcast is still a draft
-- check whether it is already scheduled
-- verify which template or sequence it belongs to
-- confirm the exact object the human means
-
-### 3. Keep summaries human, keep operations structured
-
-A solid pattern is:
-
-- machine-readable JSON for the lookup,
-- concise human summary for the recommendation,
-- explicit confirmation before any risky write.
-
-## Recommended workflows
-
-### Broadcast triage
-
-Use this when a user asks things like “what is going out today?” or “which draft matches this campaign?”
+## Email Templates
 
 ```bash
-"${KIT_BIN[@]}" broadcasts list --json
+kit email-templates list --json
 ```
 
-Then summarize only the fields needed for the decision, such as title, ID, state, and scheduled timing.
+Output:
 
-### Template resolution
+```json
+{
+  "email_templates": [
+    { "id": 9, "name": "Clean Layout", "is_default": true, "category": "HTML" }
+  ]
+}
+```
 
-When a workflow depends on finding a reusable template, prefer structured lookup first.
+Template rules:
+- Only `"category": "HTML"` templates work with the API. "Starting point" templates are *not supported*.
+- If no template is specified, Kit uses the account default.
+- "Text Only" is usually cleanest for generated content.
+
+## HTML Content Format
+
+Kit's editor requires specific HTML to render as editable blocks. Read `references/html-format.md` for the full spec and markdown conversion table.
+
+Key rules:
+- Every block element needs `class=""`: `<p class="">`, `<h2 class="">`
+- Lists: `<ul class="unordered_list">` with `<li class="list_item"><span>text</span></li>`
+- No wrapping `<div>`. No `<br>` inside lists. No nested lists.
+- Sending raw/unstyled HTML creates an uneditable "HTML block" instead of normal content.
+
+## Subscriber Targeting
+
+Target specific subscribers with `--subscriber-filter`. Read `references/subscriber-filter.md` for full syntax.
+
+Quick example — send only to tag ID 42:
 
 ```bash
-"${KIT_BIN[@]}" email-templates list --json
+kit broadcasts create --subject "VIP Update" --content "..." \
+  --subscriber-filter '[{"all":[{"type":"tag","ids":[42]}],"any":null,"none":null}]'
 ```
 
-Resolve the template ID before connecting it to any further step.
+Supports `all` (AND), `any` (OR), `none` (NOT) with `type: "tag"` or `type: "segment"`. Only one group type per request.
 
-### Sequence context
-
-When a send might actually belong to an automation flow rather than a one-off broadcast, inspect sequences before guessing.
+## Sequences
 
 ```bash
-"${KIT_BIN[@]}" sequences list --json
+kit sequences list --json
 ```
 
-## Decision rules
+Check sequences when a send might belong to an automation flow rather than a one-off broadcast.
 
-- If multiple broadcasts have similar names, do not guess.
-- If the user requests a send or schedule action, confirm the exact object from JSON first.
-- If the account context looks wrong, stop.
-- If the requested action could reach subscribers, be explicit about what is known and what still needs confirmation.
-- If a safe preview or dry-run mode exists in the local CLI version, prefer it.
+## Known Limitations
 
-## Safety checklist
-
-Before any send-impacting action, confirm all of the following when the CLI surfaces them:
-
-- correct account
-- correct broadcast or sequence ID
-- current object status
-- intended audience or target object
-- intended timing or schedule state
-
-If any of those are ambiguous, pause and ask.
-
-## Anti-patterns
-
-Avoid these:
-
-- relying on text-only output for branching logic
-- assuming the newest title match is correct
-- treating drafts and scheduled sends as interchangeable
-- performing send-adjacent work without re-checking account context
-- claiming an action is safe when the CLI state has not been inspected
-
-## Example operator summary
-
-After structured inspection, a useful summary might look like:
-
-- Broadcast `Weekly Product Notes` appears to be a draft.
-- Candidate ID: `br_12345`.
-- Matching template: `tmpl_67890`.
-- No confirmed send action taken.
-- Next safe step: confirm this is the intended broadcast before scheduling or sending.
-
-## Notes
-
-- Prefer portable shell patterns.
-- Prefer JSON for all multi-step workflows.
-- Treat sends, schedules, and edits as high-impact operations.
-- This skill intentionally avoids inventing unsupported Kit CLI behavior.
+- No broadcast preview/render endpoint — you can't see the rendered output with template applied.
+- `subscriber_filter` supports only one group type per request (all, any, or none — not combinations).
+- No way to duplicate an existing broadcast via the CLI.
+- Sent broadcasts are immutable.

@@ -1,43 +1,52 @@
 ---
 name: kit-account
-description: Use for Kit account-level tasks like login state checks, account inspection, logout/login flows, and safely preparing account-scoped operations with supported commands such as `kit config show` and `kit account`.
+description: Use for Kit account setup, auth verification, login/logout, and CLI bootstrap. All other Kit skills depend on this for auth context. Use before any Kit operation if auth state is unknown.
 ---
 
 # Kit Account
 
-Use this skill for login state, account context, and account-scoped setup.
+Account context and auth for all Kit CLI operations. Other Kit skills depend on this.
 
-## Before you act
+## CLI Bootstrap
 
-1. Prefer `kit` if installed.
-2. Fallback to `npx @kit/cli` when `kit` is unavailable.
-3. Verify config and account context before any write or sensitive read.
+All Kit skills assume the `kit` CLI is installed.
 
-```bash
-if command -v kit >/dev/null 2>&1; then
-  KIT_BIN=(kit)
-else
-  KIT_BIN=(npx @kit/cli)
-fi
-"${KIT_BIN[@]}" config show
-"${KIT_BIN[@]}" account
-```
+If not installed globally, use `npx @kit/cli` as a drop-in replacement.
 
-Use supported auth commands when needed:
+## Verify Auth
+
+Before any Kit operation, confirm auth and account context:
 
 ```bash
-"${KIT_BIN[@]}" login
-"${KIT_BIN[@]}" logout
+kit config show
+kit account
 ```
 
-## Use JSON when
+`account` returns:
 
-- you need IDs or structured config fields,
-- the result feeds another command,
-- you need deterministic branching.
+```json
+{
+  "name": "Creator Name",
+  "plan_name": "Creator Pro",
+  "primary_email_address": "creator@example.com",
+  "state": "active",
+  "created_at": "2023-01-15T00:00:00Z"
+}
+```
 
-## Notes
+If auth is missing or `state` is not `active`, stop before any mutations.
 
-- Do not invent auth-status commands.
-- If config or account output shows auth is missing or unusable, stop before mutations.
-- Prefer explicit IDs from structured output over name matching.
+## Login / Logout
+
+```bash
+kit login
+kit logout
+```
+
+`login` opens an OAuth flow. The CLI stores the token locally — subsequent commands use it automatically.
+
+## Known Quirks
+
+- API keys and OAuth tokens both work. OAuth is preferred for multi-tenant/App Store use, and is *required* for bulk operations and purchase endpoints.
+- Token refresh is automatic in the CLI. If you get repeated 401s, `logout` then `login` again.
+- `config show` reveals which auth method is active (API key vs OAuth).
