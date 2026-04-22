@@ -60,7 +60,7 @@ Always resolve tag names to IDs before write operations — names are not unique
 kit forms list --json
 ```
 
-Returns forms and landing pages together. Distinguish by `type` field (`embed`, `hosted`, `modal`).
+Returns forms and landing pages together. Distinguish by `type` field: `embed` (forms) or `hosted` (landing pages).
 
 ## Custom Fields
 

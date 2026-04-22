@@ -77,11 +77,7 @@ Tagging file format:
 ]
 ```
 
-Bulk operations are async — the CLI returns a job ID. Check status with:
-
-```bash
-kit bulk status <job_id> --json
-```
+Bulk operations are async. Completion is signaled via `callback_url` if provided in the request. There is no polling endpoint — use the callback or re-list subscribers to confirm the import landed.
 
 ## Known Limitations
 
