@@ -26,14 +26,14 @@ Output shape:
       "email_address": "buyer@example.com",
       "currency": "USD",
       "transaction_time": "2026-03-15T14:30:00Z",
-      "subtotal": 4900,
-      "products": [{ "pid": 1, "lid": 0, "quantity": 1, "unit_price": 4900 }]
+      "subtotal": 49.00,
+      "products": [{ "pid": 1, "lid": 0, "quantity": 1, "unit_price": 49.00 }]
     }
   ]
 }
 ```
 
-`subtotal` is in cents. `status` values: `paid`, `refunded`.
+`subtotal` and `unit_price` are decimal currency amounts (e.g. `49.00`), not cents. `status` values: `paid`, `refunded`.
 
 ## Webhooks
 

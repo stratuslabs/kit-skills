@@ -47,6 +47,6 @@ kit logout
 
 ## Known Quirks
 
-- API keys and OAuth tokens both work. OAuth is preferred for multi-tenant/App Store use, and is *required* for bulk operations.
+- API keys and OAuth tokens both work. OAuth is preferred for multi-tenant/App Store use, and is *required* for bulk operations and purchase endpoints.
 - Token refresh is automatic in the CLI. If you get repeated 401s, `logout` then `login` again.
 - `config show` reveals which auth method is active (API key vs OAuth).

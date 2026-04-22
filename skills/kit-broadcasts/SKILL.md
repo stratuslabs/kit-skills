@@ -29,7 +29,7 @@ List output shape:
       "send_at": "2026-05-01T09:00:00-04:00",
       "published_at": null,
       "thumbnail_url": null,
-      "email_template_id": 9,
+      "email_template": { "id": 9, "name": "Clean Layout" },
       "subscriber_filter": []
     }
   ],
