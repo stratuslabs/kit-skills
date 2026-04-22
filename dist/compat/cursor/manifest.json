@@ -1,0 +1,38 @@
+{
+  "name": "kit-ai-toolkit",
+  "version": "1.0.0",
+  "description": "Generated Cursor compatibility bundle. This is a labeled export, not a claim of native auto-discovery support.",
+  "generatedAt": "2026-04-22T02:33:21.930Z",
+  "sourceOfTruth": "../../skills",
+  "assets": "../../assets",
+  "skills": [
+    {
+      "name": "kit-account",
+      "description": "Use for Kit account-level tasks like login state checks, account inspection, logout/login flows, and safely preparing account-scoped operations with supported commands such as `kit config show` and `kit account`.",
+      "source": "../../skills/kit-account/SKILL.md",
+      "bundled": "./skills/kit-account/SKILL.md"
+    },
+    {
+      "name": "kit-audience",
+      "description": "Use for Kit audience workflows, including subscribers, tags, forms, custom fields, and segment lookup. Prefer supported commands like `kit subscribers ...`, `kit tags ...`, `kit forms ...`, `kit custom-fields ...`, and `kit segments list`.",
+      "source": "../../skills/kit-audience/SKILL.md",
+      "bundled": "./skills/kit-audience/SKILL.md"
+    },
+    {
+      "name": "kit-broadcasts",
+      "description": "Use for Kit broadcast execution and content workflows, including broadcast lookup, draft review, sequence checks, email template resolution, scheduling context, and send-risk validation with supported `kit broadcasts`, `kit sequences`, and `kit email-templates` commands.",
+      "source": "../../skills/kit-broadcasts/SKILL.md",
+      "bundled": "./skills/kit-broadcasts/SKILL.md"
+    },
+    {
+      "name": "kit-operations",
+      "description": "Use for cross-domain Kit workflows and operational tasks that span purchases, webhooks, bulk jobs, and related inspection work. Prefer supported commands like `kit purchases ...`, `kit webhooks ...`, and `kit bulk ...`.",
+      "source": "../../skills/kit-operations/SKILL.md",
+      "bundled": "./skills/kit-operations/SKILL.md"
+    }
+  ],
+  "limitations": [
+    "Generated for compatibility review and manual wiring.",
+    "Exact vendor-native install semantics are intentionally not assumed by this repo."
+  ]
+}

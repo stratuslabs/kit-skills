@@ -1,16 +1,28 @@
 {
   "name": "kit-ai-toolkit",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Cross-agent Kit skills toolkit distributed as shared skill source plus thin client manifests.",
+  "description": "Installable Kit skill bundle with Codex-ready installs and generated compatibility exports for other clients.",
   "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "clean": "node ./scripts/clean.mjs",
+    "validate": "node ./scripts/validate-skills.mjs",
+    "build": "node ./scripts/build-compat.mjs",
+    "install:codex": "node ./scripts/install-skills.mjs --target codex-global",
+    "install:codex:project": "node ./scripts/install-skills.mjs --target codex-project",
+    "install:compat": "node ./scripts/install-skills.mjs --target compat-local",
+    "prepare": "npm run build"
+  },
   "files": [
-    ".claude-plugin",
-    ".cursor-plugin",
-    ".codex-plugin",
     "assets",
-    "skills",
+    "dist",
     "reference",
+    "scripts",
+    "skills",
     "README.md"
-  ]
+  ],
+  "engines": {
+    "node": ">=20.11"
+  }
 }
