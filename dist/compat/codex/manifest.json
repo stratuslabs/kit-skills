@@ -2,7 +2,7 @@
   "name": "kit-ai-toolkit",
   "version": "1.0.0",
   "description": "Generated Codex compatibility bundle. Use install-skills.mjs for direct installs into Codex skill paths.",
-  "generatedAt": "2026-04-22T02:26:27.201Z",
+  "generatedAt": "2026-04-22T02:33:21.928Z",
   "sourceOfTruth": "../../skills",
   "assets": "../../assets",
   "skills": [

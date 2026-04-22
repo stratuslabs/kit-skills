@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { loadSkills, validateSkills, ensureDir, copyDirectory, resolveHomePath } from './shared.mjs';
+import { loadSkills, validateSkills, skillsDir, repoRoot, ensureDir, copyDirectory, resolveHomePath } from './shared.mjs';
 
 const args = process.argv.slice(2);
 const options = parseArgs(args);
@@ -53,7 +53,23 @@ switch (options.target) {
     fail(`Unsupported target: ${options.target}`);
 }
 
+function guardOverlap(destinationRoot) {
+  const resolvedDest = path.resolve(destinationRoot);
+  const resolvedSkills = path.resolve(skillsDir);
+  const resolvedRepo = path.resolve(repoRoot);
+  // Reject if destination is inside the source skills dir, or vice versa
+  if (resolvedDest.startsWith(resolvedSkills + path.sep) || resolvedDest === resolvedSkills ||
+      resolvedSkills.startsWith(resolvedDest + path.sep)) {
+    fail(`Destination '${destinationRoot}' overlaps with source skills directory '${skillsDir}'. This would destroy source files.`);
+  }
+  // Also reject if destination is the repo root itself
+  if (resolvedDest === resolvedRepo) {
+    fail(`Destination '${destinationRoot}' is the repository root. This would overwrite source files.`);
+  }
+}
+
 function installSkillDirectories(destinationRoot) {
+  guardOverlap(destinationRoot);
   ensureDir(destinationRoot);
   for (const skill of skills) {
     const destination = path.join(destinationRoot, skill.slug);
@@ -63,6 +79,7 @@ function installSkillDirectories(destinationRoot) {
 }
 
 function installCompatBundle(destinationRoot) {
+  guardOverlap(destinationRoot);
   const destination = path.join(destinationRoot, 'compat');
   fs.rmSync(destination, { recursive: true, force: true });
   ensureDir(destination);
