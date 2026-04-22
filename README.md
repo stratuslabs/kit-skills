@@ -62,21 +62,17 @@ We're not accepting pull requests at this time. If you find an issue, please [op
 ---
 
 <details>
-<summary>Development notes</summary>
+<summary>Development</summary>
 
 ### Repository layout
 
-- `skills/` — source-of-truth skill content
-- `scripts/` — validation, build, and install scripts
-- `dist/` — generated compatibility output
-- `reference/` — CLI reference notes
+- `skills/` — skill content (source of truth)
+- `scripts/` — validation and install scripts
 
-### Development workflow
+### Validate skills
 
 ```bash
-npm run validate    # check skill content
-npm run build       # generate compatibility bundles
-npm run clean       # remove generated output
+npm run validate
 ```
 
 ### Install targets
@@ -86,16 +82,5 @@ npm run install:codex           # global: ~/.codex/skills/
 npm run install:codex:project   # project: ./.codex/skills/
 npm run install:compat          # compatibility bundle: ./.kit-skills/compat/
 ```
-
-### Custom install destination
-
-```bash
-node ./scripts/install-skills.mjs --target compat-dir --dest ~/path/to/output
-node ./scripts/install-skills.mjs --target codex-global --dest ~/.codex/skills
-```
-
-### Kit CLI commands used by these skills
-
-`kit account` · `kit config show` · `kit login` · `kit logout` · `kit subscribers` · `kit tags` · `kit forms` · `kit sequences` · `kit broadcasts` · `kit custom-fields` · `kit purchases` · `kit webhooks` · `kit segments list` · `kit email-templates list` · `kit bulk`
 
 </details>

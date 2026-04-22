@@ -4,10 +4,7 @@ import os from 'node:os';
 
 export const repoRoot = path.resolve(import.meta.dirname, '..');
 export const skillsDir = path.join(repoRoot, 'skills');
-export const assetsDir = path.join(repoRoot, 'assets');
-export const distDir = path.join(repoRoot, 'dist');
 
-export const supportedCompatTargets = ['claude', 'cursor', 'codex'];
 
 export function getSkillDirectories() {
   return fs
