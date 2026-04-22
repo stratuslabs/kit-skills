@@ -81,6 +81,53 @@ export function writeJson(filePath, value) {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
+/**
+ * Validate all loaded skills and return an array of error strings.
+ * An empty array means everything is valid.
+ */
+export function validateSkills(skills) {
+  const errors = [];
+
+  if (skills.length === 0) {
+    errors.push('No skills were found under skills/.');
+  }
+
+  for (const skill of skills) {
+    if (!fs.existsSync(skill.skillFile)) {
+      errors.push(`${skill.slug}: missing SKILL.md`);
+      continue;
+    }
+
+    if (!skill.parsed) {
+      errors.push(`${skill.slug}: SKILL.md is missing YAML frontmatter`);
+      continue;
+    }
+
+    const { attributes, body } = skill.parsed;
+    if (!attributes.name) {
+      errors.push(`${skill.slug}: frontmatter is missing name`);
+    }
+
+    if (attributes.name && attributes.name !== skill.slug) {
+      errors.push(`${skill.slug}: frontmatter name must match directory name`);
+    }
+
+    if (!attributes.description) {
+      errors.push(`${skill.slug}: frontmatter is missing description`);
+    }
+
+    if (!body.trim()) {
+      errors.push(`${skill.slug}: SKILL.md body is empty`);
+    }
+
+    if (!/^#\s+/m.test(body)) {
+      errors.push(`${skill.slug}: SKILL.md body should include a top-level heading`);
+    }
+  }
+
+  return errors;
+}
+
 export function resolveHomePath(targetPath) {
   if (!targetPath.startsWith('~/')) {
     return targetPath;

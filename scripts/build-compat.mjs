@@ -1,16 +1,14 @@
 import path from 'node:path';
-import { assetsDir, distDir, loadSkills, resetDir, copyDirectory, copyFile, writeJson } from './shared.mjs';
+import { assetsDir, distDir, loadSkills, validateSkills, resetDir, copyDirectory, copyFile, writeJson } from './shared.mjs';
 
 const packageJson = JSON.parse(await BunOrNodeRead(path.join(path.resolve(import.meta.dirname, '..'), 'package.json')));
-const allSkills = loadSkills();
-const invalid = allSkills.filter((s) => !s.parsed || !s.parsed.attributes);
-if (invalid.length > 0) {
-  console.error(`Build failed: ${invalid.length} skill(s) have missing or invalid frontmatter:`);
-  for (const s of invalid) console.error(`  - ${s.slug}`);
-  console.error('Run `npm run validate` for details.');
+const skills = loadSkills();
+const validationErrors = validateSkills(skills);
+if (validationErrors.length > 0) {
+  console.error('Build failed — skill validation errors:\n');
+  for (const err of validationErrors) console.error(`  - ${err}`);
   process.exit(1);
 }
-const skills = allSkills;
 
 resetDir(distDir);
 

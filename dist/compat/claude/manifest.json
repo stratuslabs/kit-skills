@@ -2,7 +2,7 @@
   "name": "kit-ai-toolkit",
   "version": "1.0.0",
   "description": "Generated Claude compatibility bundle. This is a labeled export, not a claim of native auto-discovery support.",
-  "generatedAt": "2026-04-22T02:13:07.482Z",
+  "generatedAt": "2026-04-22T02:26:27.202Z",
   "sourceOfTruth": "../../skills",
   "assets": "../../assets",
   "skills": [

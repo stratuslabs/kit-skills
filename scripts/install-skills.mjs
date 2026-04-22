@@ -1,19 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { loadSkills, ensureDir, copyDirectory, resolveHomePath } from './shared.mjs';
+import { loadSkills, validateSkills, ensureDir, copyDirectory, resolveHomePath } from './shared.mjs';
 
 const args = process.argv.slice(2);
 const options = parseArgs(args);
-const allSkills = loadSkills();
-const invalid = allSkills.filter((s) => !s.parsed || !s.parsed.attributes);
-if (invalid.length > 0) {
-  console.error(`Install failed: ${invalid.length} skill(s) have missing or invalid frontmatter:`);
-  for (const s of invalid) console.error(`  - ${s.slug}`);
-  console.error('Run `npm run validate` for details.');
+const skills = loadSkills();
+const validationErrors = validateSkills(skills);
+if (validationErrors.length > 0) {
+  console.error('Install failed — skill validation errors:\n');
+  for (const err of validationErrors) console.error(`  - ${err}`);
   process.exit(1);
 }
-const skills = allSkills;
 
 if (!options.target) {
   fail('Missing --target. Supported targets: codex-global, codex-project, compat-local, compat-dir.');
