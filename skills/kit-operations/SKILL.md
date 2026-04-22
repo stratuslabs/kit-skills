@@ -77,7 +77,7 @@ Tagging file format:
 ]
 ```
 
-Bulk operations are async. Completion is signaled via `callback_url` if provided in the request. There is no polling endpoint — use the callback or re-list subscribers to confirm the import landed.
+Small bulk requests are handled synchronously — the response includes results (and per-row errors) immediately. Larger batches are processed async; provide a `callback_url` to receive completion notification. There is no polling endpoint for async jobs.
 
 ## Known Limitations
 
