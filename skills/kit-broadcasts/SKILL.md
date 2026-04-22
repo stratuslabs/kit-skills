@@ -37,8 +37,8 @@ List output shape:
 }
 ```
 
-Determine broadcast status from fields:
-- `send_at` null + `published_at` null → *draft*
+Determine broadcast status from `send_at`:
+- `send_at` null → *draft* (even if `published_at` is set from `public: true`)
 - `send_at` set + future → *scheduled*
 - `send_at` past → *sent*
 
